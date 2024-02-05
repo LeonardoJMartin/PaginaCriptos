@@ -1,12 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Média</title>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    
+    <div>
+        <div>
+            <div>
+                <div id="clicarAddTransacao">Adicionar Nova Transação</div>
+            </div>
+            <div>
+
+            </div>
+        </div>
+        <div id="adicionarTransacao" class="ocultar">
+            <div>
+                <div>
+                    <label for="">Qual o nome da moeda?</label>
+                    <input type="text" id="nomeMoeda" placeholder="BTC">
+                </div>
+                <div>
+                    <label for="">Qual o preço que a moeda? (dólar)</label>
+                    <input type="text" id="precoMoeda" placeholder="40.670,64">
+                </div>
+                <div>
+                    <label for="">Quanto você comprou? (dólar)</label>
+                    <input type="text" id="valorPago" placeholder="200,00">
+                </div>
+                <div>
+                    <label for="">Qual a data da compra? </label>
+                    <input type="text" id="dataCompra" placeholder="17/12/2023">
+                </div>
+            </div>
+            <div>
+                <button id="clicarIncluir">Incluir</button>
+            </div>
+        </div>
+        <div id="listaTrasacoes" class="classListaTrasacoes">
+                     
+        </div>
 </body>
+
 </html>
