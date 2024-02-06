@@ -1,6 +1,10 @@
 var listaTodasCriptos = [];
 
-$('#clicarAddTransacao').click(function(event) {
+$('#nomeMoeda').on('input', function(){
+    let valor = $(this).val();
+    $(this).val(valor.toUpperCase());
+});
+$('#clicarAddTransacao').click(function() {
     desocultar('#adicionarTransacao');
 });
 $('#clicarIncluir').click(controlaAdicao);
@@ -14,13 +18,13 @@ function controlaAdicao(){
 function adicionarCompra(){
     let operacao = {
         dataCompra: $('#dataCompra').val(),
-        valorPago: $('#valorPago').val(),
+        valorInvestido: $('#valorInvestido').val(),
         precoMoeda: $('#precoMoeda').val(),
-        nomeMoeda: $('#nomeMoeda').val(),              
+        nomeMoeda: $('#nomeMoeda').val().toUpperCase(),              
     }
-    operacao.quantidadeMoeda = operacao.valorPago / operacao.precoMoeda;   
+    operacao.quantidadeMoeda = operacao.valorInvestido / operacao.precoMoeda;   
     
-    let verificaSeJaExiste = listaTodasCriptos.find(objeto => objeto.nome === nomeMoeda); // Verifica se existe uma cripto com esse nome armazenada
+    let verificaSeJaExiste = listaTodasCriptos.find(objeto => objeto.nome === operacao.nomeMoeda); // Verifica se existe uma cripto com esse nome armazenada
 
     if(verificaSeJaExiste){  //Se ja existe, adiciona uma nova operação e acrescenta o valor obtido
         verificaSeJaExiste.listaOperacaoCripto.push(operacao);
@@ -42,15 +46,18 @@ function adicionarCompra(){
 
 function calculaMediaCripto(criptoAtual){ // Calcula preço médio da moeda
     let totalTransacao = 0;
+    let valorInvestido = 0;
     for(let transacao of criptoAtual.listaOperacaoCripto){
         totalTransacao += transacao.precoMoeda * transacao.quantidadeMoeda;
+        valorInvestido += parseFloat(transacao.valorInvestido);
     }
     criptoAtual.mediaTotalValor = totalTransacao / criptoAtual.totalObtido;
+    criptoAtual.valorTotalInvestido = valorInvestido;
 }
 
 function resetarCampos(){
     $('#dataCompra').val('');
-    $('#valorPago').val('');
+    $('#valorInvestido').val('');
     $('#precoMoeda').val(''); 
     $('#nomeMoeda').val('');
 }
@@ -66,12 +73,13 @@ function desocultar(val){
 function mostrarTransacoesInclusas(){
     $('#listaTrasacoes').empty();
     for (let moeda of listaTodasCriptos) {
-        let clonaBloco = $('#listaTrasacoes').clone();
-        clonaBloco.append('<div>Moeda: ' + moeda.nome + '</div>');
-        clonaBloco.append('<div>Média total: ' + moeda.mediaTotalValor + '</div>');
-        clonaBloco.append('<div>Quantidade de ' + moeda.nome +' total: ' + moeda.totalObtido + '</div>');
-        clonaBloco.append();
-        clonaBloco.append('<div>Número de transações: ' + moeda.listaOperacaoCripto.length + '</div>');
-        clonaBloco.appendTo('#listaTrasacoes');
+        let transacao = $('#listaTrasacoes');
+        transacao.append('<div>');
+        transacao.append('<div>Moeda: ' + moeda.nome + '</div>');
+        transacao.append('<div>Média total: ' + moeda.mediaTotalValor + '</div>');
+        transacao.append('<div>Quantidade de ' + moeda.nome +' total: ' + moeda.totalObtido + '</div>');
+        transacao.append('<div>Total investido: '+ moeda.valorTotalInvestido + '</div>');
+        transacao.append('<div>Número de transações: ' + moeda.listaOperacaoCripto.length + '</div>');
+        transacao.append('</div>');
     }
 }
