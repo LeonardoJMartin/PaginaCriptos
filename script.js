@@ -1,13 +1,27 @@
 var listaTodasCriptos = [];
-
+var casasDecimais = 3;
+$('#adicionarTransacao').hide();
 $('#nomeMoeda').on('input', function(){
     let valor = $(this).val();
     $(this).val(valor.toUpperCase());
 });
-$('#clicarAddTransacao').click(function() {
-    desocultar('#adicionarTransacao');
+$('#clicarAddTransacao').on('click', function() {
+    $('#adicionarTransacao').show();
 });
-$('#clicarIncluir').click(controlaAdicao);
+$('#clicarIncluir').on('click', controlaAdicao);
+$('#limparCampos').on('click', function(){
+    resetarCampos();
+});
+$('#excluirDados').on('click', function(){
+    excluirDados();
+    listaTodasCriptos = [];
+});
+
+string = localStorage.getItem("criptos");
+if(string != null){
+    listaTodasCriptos = JSON.parse(string);
+    mostrarTransacoesInclusas();
+}
 
 function controlaAdicao(){
     adicionarCompra();
@@ -18,11 +32,13 @@ function controlaAdicao(){
 function adicionarCompra(){
     let operacao = {
         dataCompra: $('#dataCompra').val(),
-        valorInvestido: $('#valorInvestido').val(),
-        precoMoeda: $('#precoMoeda').val(),
+        valorInvestido: parseFloat($('#valorInvestido').val()),
+        precoMoeda: parseFloat($('#precoMoeda').val()),
         nomeMoeda: $('#nomeMoeda').val().toUpperCase(),              
     }
-    operacao.quantidadeMoeda = operacao.valorInvestido / operacao.precoMoeda;   
+    operacao.valorInvestido = operacao.valorInvestido;
+    operacao.precoMoeda = operacao.precoMoeda;
+    operacao.quantidadeMoeda = (operacao.valorInvestido / operacao.precoMoeda);   
     
     let verificaSeJaExiste = listaTodasCriptos.find(objeto => objeto.nome === operacao.nomeMoeda); // Verifica se existe uma cripto com esse nome armazenada
 
@@ -62,24 +78,28 @@ function resetarCampos(){
     $('#nomeMoeda').val('');
 }
 
-function ocultar(val){
-    $(val).addClass('ocultar');
-}
-
-function desocultar(val){
-    $(val).removeClass('ocultar');
-}
-
 function mostrarTransacoesInclusas(){
     $('#listaTrasacoes').empty();
     for (let moeda of listaTodasCriptos) {
         let transacao = $('#listaTrasacoes');
-        transacao.append('<div>');
+        transacao.append('<div class="fechar-icone">');
         transacao.append('<div>Moeda: ' + moeda.nome + '</div>');
-        transacao.append('<div>Média total: ' + moeda.mediaTotalValor + '</div>');
+        transacao.append('<div>Média total: ' + moeda.mediaTotalValor.toFixed(casasDecimais) + '</div>');
         transacao.append('<div>Quantidade de ' + moeda.nome +' total: ' + moeda.totalObtido + '</div>');
-        transacao.append('<div>Total investido: '+ moeda.valorTotalInvestido + '</div>');
+        transacao.append('<div>Total investido: '+ moeda.valorTotalInvestido.toFixed(2) + '</div>');
         transacao.append('<div>Número de transações: ' + moeda.listaOperacaoCripto.length + '</div>');
         transacao.append('</div>');
     }
+    salvaDados()
+}
+
+function excluirDados(){
+    localStorage.removeItem("criptos");
+    string = "";
+    $('#listaTrasacoes').html(string);
+}
+
+function salvaDados(){
+    let jsonString = JSON.stringify(listaTodasCriptos);
+    localStorage.setItem("criptos", jsonString);
 }

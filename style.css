@@ -4,6 +4,6 @@
     box-sizing: border-box;
 }
 
-.ocultar{
-    display: none;
+.fechar-icone:after{
+    content: '\2716';
 }

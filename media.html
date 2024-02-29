@@ -6,21 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Média</title>
     <script src="script.js" defer></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="jquery-3.7.1.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div>
-        <div>
-            <div>
-                <div id="clicarAddTransacao">Adicionar Nova Transação</div>
-            </div>
-            <div>
 
-            </div>
+        <div>
+            <button id="clicarAddTransacao">Adicionar Nova Transação</button>
         </div>
-        <div id="adicionarTransacao" class="ocultar">
+        <div>
+            <button id="excluirDados">Excluir Dados</button>
+        </div>
+
+        <div id="adicionarTransacao">
             <div>
                 <div>
                     <label for="">Qual o nome da moeda?</label>
@@ -42,9 +42,12 @@
             <div>
                 <button id="clicarIncluir">Incluir</button>
             </div>
+            <div>
+                <button id="limparCampos">Limpar Campos</button>
+            </div>
         </div>
         <div id="listaTrasacoes" class="classListaTrasacoes">
-                     
+
         </div>
 </body>
 
