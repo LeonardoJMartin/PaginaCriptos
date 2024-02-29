@@ -1,5 +1,5 @@
 var listaTodasCriptos = [];
-var casasDecimais = 3;
+var casasDecimais = 2;
 $('#adicionarTransacao').hide();
 $('#nomeMoeda').on('input', function(){
     let valor = $(this).val();
@@ -15,6 +15,10 @@ $('#limparCampos').on('click', function(){
 $('#excluirDados').on('click', function(){
     excluirDados();
     listaTodasCriptos = [];
+});
+$(document).on('click', '.fechar-icone', function(){
+    let id = $(this).parent().attr('id');
+    excluirCripto(id);
 });
 
 string = localStorage.getItem("criptos");
@@ -81,13 +85,15 @@ function resetarCampos(){
 function mostrarTransacoesInclusas(){
     $('#listaTrasacoes').empty();
     for (let moeda of listaTodasCriptos) {
-        let transacao = $('#listaTrasacoes');
-        transacao.append('<div class="fechar-icone">');
+        moeda.id = geraId(moeda);
+        let transacao = $('<div>').attr('id', moeda.id);
+        transacao.append('<div class="fechar-icone"></div>');
         transacao.append('<div>Moeda: ' + moeda.nome + '</div>');
         transacao.append('<div>Média total: ' + moeda.mediaTotalValor.toFixed(casasDecimais) + '</div>');
-        transacao.append('<div>Quantidade de ' + moeda.nome +' total: ' + moeda.totalObtido + '</div>');
+        transacao.append('<div>Quantidade de ' + moeda.nome +' total: ' + moeda.totalObtido.toFixed(2) + '</div>');
         transacao.append('<div>Total investido: '+ moeda.valorTotalInvestido.toFixed(2) + '</div>');
         transacao.append('<div>Número de transações: ' + moeda.listaOperacaoCripto.length + '</div>');
+        $('#listaTrasacoes').append(transacao);
         transacao.append('</div>');
     }
     salvaDados()
@@ -102,4 +108,18 @@ function excluirDados(){
 function salvaDados(){
     let jsonString = JSON.stringify(listaTodasCriptos);
     localStorage.setItem("criptos", jsonString);
+}
+
+function geraId(moeda){
+    let id = moeda.nome + parseInt(Math.random() * 1000);
+    if($('#'+id).length){
+        return geraId(moeda);
+    }
+    return id;
+}
+
+function excluirCripto(id){
+    $('#'+ id).remove();
+    listaTodasCriptos = listaTodasCriptos.filter(item => item.id !== id);
+    console.log(listaTodasCriptos);
 }
