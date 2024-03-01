@@ -21,30 +21,38 @@
         </div>
 
         <div id="adicionarTransacao">
-            <div>
+            <div id="compraVenda">
+                <input type="radio" name="rdCompraVenda" id="rdCompra" value="compra">
+                <label for="rdCompra">Compra</label>
+                <input type="radio" name="rdCompraVenda" id="rdVenda" value="venda">
+                <label for="rdCompra">Venda</label>
+            </div>
+            <div id="infosTransacao">
                 <div>
-                    <label for="">Qual o nome da moeda?</label>
+                    <label for="nomeMoeda">Qual o nome da moeda?</label>
                     <input type="text" id="nomeMoeda" class="inputs" placeholder="BTC">
                 </div>
                 <div>
-                    <label for="">Qual o preço que a moeda? (dólar)</label>
+                    <label for="precoMoeda">Qual o preço da moeda? (dólar)</label>
                     <input type="number" id="precoMoeda" class="inputs" placeholder="40.670,64">
                 </div>
                 <div>
-                    <label for="">Quanto você comprou? (dólar)</label>
-                    <input type="number" id="valorInvestido" class="inputs" placeholder="200,00">
+                    <label for="valorTransacao">Quanto você comprou? (dólar)</label>
+                    <input type="number" id="valorTransacao" class="inputs" placeholder="200,00">
                 </div>
                 <div>
-                    <label for="">Qual a data da compra? </label>
-                    <input type="date" id="dataCompra" class="inputs" placeholder="17/12/2023">
+                    <label for="dataTransacao">Qual a data da transação? </label>
+                    <input type="date" id="dataTransacao" class="inputs" placeholder="17/12/2023">
+                </div>
+
+                <div>
+                    <button id="clicarIncluir">Incluir</button>
+                </div>
+                <div>
+                    <button id="limparCampos">Limpar Campos</button>
                 </div>
             </div>
-            <div>
-                <button id="clicarIncluir">Incluir</button>
-            </div>
-            <div>
-                <button id="limparCampos">Limpar Campos</button>
-            </div>
+
         </div>
         <div id="listaTrasacoes" class="classListaTrasacoes">
 

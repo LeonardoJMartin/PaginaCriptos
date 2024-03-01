@@ -1,88 +1,140 @@
 var listaTodasCriptos = [];
 var casasDecimais = 2;
 $('#adicionarTransacao').hide();
-$('#nomeMoeda').on('input', function(){
+$('#infosTransacao').hide();
+$('#nomeMoeda').on('input', function () {
     let valor = $(this).val();
     $(this).val(valor.toUpperCase());
 });
-$('#clicarAddTransacao').on('click', function() {
+$('#clicarAddTransacao').on('click', function () {
     $('#adicionarTransacao').show();
 });
 $('#clicarIncluir').on('click', controlaAdicao);
-$('#limparCampos').on('click', function(){
+$('#limparCampos').on('click', function () {
     resetarCampos();
 });
-$('#excluirDados').on('click', function(){
+$('#excluirDados').on('click', function () {
     excluirDados();
     listaTodasCriptos = [];
 });
-$(document).on('click', '.fechar-icone', function(){
+$(document).on('click', '.fechar-icone', function () {
     let id = $(this).parent().attr('id');
     excluirCripto(id);
 });
+$('input[name="rdCompraVenda"]').on('input', function () {
+    let retorno = verificaRadioCompraVenda();
+    if (retorno === "compra") {
+        $('[for="valorTransacao"]').text('Quanto você comprou?');
+        $('[for="dataTransacao"]').text('Qual a data da compra?');
+        $('#clicarIncluir').text('Incluir Compra');
+    }
+    else if (retorno === "venda") {
+        $('[for="valorTransacao"]').text('Quanto você vendeu?');
+        $('[for="dataTransacao"]').text('Qual a data da venda?');
+        $('#clicarIncluir').text('Incluir Venda');
+    }
+    $('#infosTransacao').show();
+});
 
 string = localStorage.getItem("criptos");
-if(string != null){
+if (string != null) {
     listaTodasCriptos = JSON.parse(string);
     mostrarTransacoesInclusas();
 }
 
-function controlaAdicao(){
-    adicionarCompra();
+function verificaRadioCompraVenda() {
+    let valorCompraVenda = $('input[name="rdCompraVenda"]:checked').val();
+    return valorCompraVenda;
+}
+
+function controlaAdicao() {
+    let retornoRadio = verificaRadioCompraVenda();
+    let retornoValores = {};
+    if (retornoRadio === "compra") {
+        retornoValores = obtemValores(retornoRadio);
+        adicionarCompra(retornoValores);
+    }
+    else if (retornoRadio === "venda") {
+        retornoValores = obtemValores(retornoRadio);
+        adicionarVenda(retornoValores);
+    }
+
     resetarCampos();
     mostrarTransacoesInclusas();
 }
 
-function adicionarCompra(){
-    let operacao = {
-        dataCompra: $('#dataCompra').val(),
-        valorInvestido: parseFloat($('#valorInvestido').val()),
+function obtemValores(retornoRadio) {
+    var operacao = {
+        data: $('#data').val(),
+        valorTransacao: parseFloat($('#valorTransacao').val()),
         precoMoeda: parseFloat($('#precoMoeda').val()),
-        nomeMoeda: $('#nomeMoeda').val().toUpperCase(),              
+        nomeMoeda: $('#nomeMoeda').val().toUpperCase(),
+        transacao: retornoRadio,
     }
-    operacao.valorInvestido = operacao.valorInvestido;
-    operacao.precoMoeda = operacao.precoMoeda;
-    operacao.quantidadeMoeda = (operacao.valorInvestido / operacao.precoMoeda);   
-    
-    let verificaSeJaExiste = listaTodasCriptos.find(objeto => objeto.nome === operacao.nomeMoeda); // Verifica se existe uma cripto com esse nome armazenada
+    operacao.quantidadeMoeda = (operacao.valorTransacao / operacao.precoMoeda);
 
-    if(verificaSeJaExiste){  //Se ja existe, adiciona uma nova operação e acrescenta o valor obtido
-        verificaSeJaExiste.listaOperacaoCripto.push(operacao);
-        verificaSeJaExiste.totalObtido += operacao.quantidadeMoeda;
-        calculaMediaCripto(verificaSeJaExiste);
+    let verificaSeExiste = listaTodasCriptos.find(objeto => objeto.nome === operacao.nomeMoeda); // Verifica se existe uma cripto com esse nome armazenada
+    let obj = { verificaSeExiste, operacao }
+    return obj;
+}
+
+function adicionarCompra(obj) {
+    if (obj.verificaSeExiste) {  //Se ja existe, adiciona uma nova operação e acrescenta o valor obtido
+        obj.verificaSeExiste.listaOperacaoCripto.push(obj.operacao);
+        obj.verificaSeExiste.totalObtido += obj.operacao.quantidadeMoeda;
+        calculaMediaCripto(obj.verificaSeExiste);
     }
-    else{ //Se não existe, cria um novo objeto para essa cripto, e adiciona na listaTodasCriptos
+    else { //Se não existe, cria um novo objeto para essa cripto, e adiciona na listaTodasCriptos
         let cripto = {
-            nome: operacao.nomeMoeda, 
-            listaOperacaoCripto: [operacao], 
-            totalObtido: operacao.quantidadeMoeda, 
-            mediaTotalValor: operacao.precoMoeda
+            nome: obj.operacao.nomeMoeda,
+            listaOperacaoCripto: [obj.operacao],
+            totalObtido: obj.operacao.quantidadeMoeda,
+            mediaTotalValor: obj.operacao.precoMoeda
         };
         calculaMediaCripto(cripto);
         listaTodasCriptos.push(cripto);
     }
-    
 }
 
-function calculaMediaCripto(criptoAtual){ // Calcula preço médio da moeda
-    let totalTransacao = 0;
-    let valorInvestido = 0;
-    for(let transacao of criptoAtual.listaOperacaoCripto){
-        totalTransacao += transacao.precoMoeda * transacao.quantidadeMoeda;
-        valorInvestido += parseFloat(transacao.valorInvestido);
+function adicionarVenda(obj) {
+    if (obj.verificaSeExiste) {  //Se ja existe, adiciona uma nova operação e acrescenta o valor obtido
+        obj.verificaSeExiste.listaOperacaoCripto.push(obj.operacao);
+        obj.verificaSeExiste.totalObtido -= obj.operacao.quantidadeMoeda;
+        calculaMediaCripto(obj.verificaSeExiste);
     }
-    criptoAtual.mediaTotalValor = totalTransacao / criptoAtual.totalObtido;
-    criptoAtual.valorTotalInvestido = valorInvestido;
+    else {
+        alert("Você não possui nenhum registro de compra dessa moeda, primeiro registre a compra, depois a venda.")
+    }
 }
 
-function resetarCampos(){
-    $('#dataCompra').val('');
-    $('#valorInvestido').val('');
-    $('#precoMoeda').val(''); 
+function calculaMediaCripto(criptoAtual) { // Calcula preço médio da moeda
+    let totalTransacoes = 0;
+    for (let transacao of criptoAtual.listaOperacaoCripto) {
+        if (transacao.transacao === "compra") {
+            totalTransacoes += transacao.valorTransacao;
+        }     
+    }
+
+    criptoAtual.mediaTotalValor = totalTransacoes / criptoAtual.totalObtido;
+     for (let transacao of criptoAtual.listaOperacaoCripto) {
+        if (transacao.transacao === "venda") {
+            totalTransacoes -= transacao.valorTransacao;
+        }
+    }
+    criptoAtual.valorTotalInvestido = totalTransacoes;
+
+}
+
+function resetarCampos() {
+    $('#dataTransacao').val('');
+    $('#valorTransacao').val('');
+    $('#precoMoeda').val('');
     $('#nomeMoeda').val('');
 }
 
-function mostrarTransacoesInclusas(){
+function mostrarTransacoesInclusas() {
+    let transacaoVenda = 0;
+    let transacaoCompra = 0;
     $('#listaTrasacoes').empty();
     for (let moeda of listaTodasCriptos) {
         moeda.id = geraId(moeda);
@@ -90,36 +142,46 @@ function mostrarTransacoesInclusas(){
         transacao.append('<div class="fechar-icone"></div>');
         transacao.append('<div>Moeda: ' + moeda.nome + '</div>');
         transacao.append('<div>Média total: ' + moeda.mediaTotalValor.toFixed(casasDecimais) + '</div>');
-        transacao.append('<div>Quantidade de ' + moeda.nome +' total: ' + moeda.totalObtido.toFixed(2) + '</div>');
-        transacao.append('<div>Total investido: '+ moeda.valorTotalInvestido.toFixed(2) + '</div>');
-        transacao.append('<div>Número de transações: ' + moeda.listaOperacaoCripto.length + '</div>');
+        transacao.append('<div>Quantidade de ' + moeda.nome + ' total: ' + moeda.totalObtido.toFixed(2) + '</div>');
+        transacao.append('<div>Total investido: ' + moeda.valorTotalInvestido.toFixed(2) + '</div>');
+        for (let transacao of moeda.listaOperacaoCripto) {
+            if (transacao.transacao === "compra") {
+                transacaoCompra++;
+            }
+            else if (transacao.transacao === "venda") {
+                transacaoVenda++;
+            }
+        }
+        transacao.append('<div>Total de transações de venda: ' + transacaoVenda + '</div>');
+        transacao.append('<div>Total de transações de compra: ' + transacaoCompra + '</div>');
+        transacao.append('<div>Total de todas as transações: ' + moeda.listaOperacaoCripto.length + '</div>');
         $('#listaTrasacoes').append(transacao);
         transacao.append('</div>');
     }
     salvaDados()
 }
 
-function excluirDados(){
+function excluirDados() {
     localStorage.removeItem("criptos");
     string = "";
     $('#listaTrasacoes').html(string);
 }
 
-function salvaDados(){
+function salvaDados() {
     let jsonString = JSON.stringify(listaTodasCriptos);
     localStorage.setItem("criptos", jsonString);
 }
 
-function geraId(moeda){
+function geraId(moeda) {
     let id = moeda.nome + parseInt(Math.random() * 1000);
-    if($('#'+id).length){
+    if ($('#' + id).length) {
         return geraId(moeda);
     }
     return id;
 }
 
-function excluirCripto(id){
-    $('#'+ id).remove();
+function excluirCripto(id) {
+    $('#' + id).remove();
     listaTodasCriptos = listaTodasCriptos.filter(item => item.id !== id);
-    console.log(listaTodasCriptos);
+    salvaDados();
 }
